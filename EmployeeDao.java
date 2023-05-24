@@ -1,26 +1,21 @@
-package com.avega.company.dao;
+package com.avega.training.dao;
 
 import java.util.List;
-import java.util.Set;
 
-import com.avega.company.exception.EmployeeNotFoundException;
-import com.avega.company.pojo.Employee;
-import com.avega.company.pojo.Skill;
+import com.avega.training.pojo.Employee;
 
 public interface EmployeeDao {
 
 	List<Employee> getAllEmployees();
 
-	List<Employee> getEmployeeByname(String name);
-
-	Employee getEmployee(String id) throws EmployeeNotFoundException;
-
-	boolean addEmployee(Employee employee);
-
-	boolean deleteEmployee(Employee employee);
-
-	Employee updateEmployee(Employee employee) throws EmployeeNotFoundException;
+	Employee getEmployeeById(String emp_id);
 	
-	boolean assignSkillsToEmoloyee(Set<Skill> skills, String employeeId);
+	boolean addEmployee(Employee employee);
+	
+	boolean removeEmployee(String emp_id);
+	
+	boolean updateEmployee(Employee employee);
+	
+	
 
 }

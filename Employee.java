@@ -1,71 +1,76 @@
-package com.avega.company.pojo;
+package com.avega.training.pojo;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.Objects;
-import java.util.Set;
 
 public class Employee {
-
-	private String id;
-	private String name;
-	private LocalDate doj;
-	private double salary;
-	private Set<Skill> skills;
+	private String emp_id;
+	private String emp_name;
+	private int salary;
+	private String department;
+	private Date doj;
 
 	public Employee() {
 	}
 
-	public Employee(String id, String name, LocalDate doj, double salary) {
+	public Employee(String emp_id, String emp_name, int salary, String department, Date doj) {
 		super();
-		this.id = id;
-		this.name = name;
-		this.doj = doj;
+		this.emp_id = emp_id;
+		this.emp_name = emp_name;
 		this.salary = salary;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public LocalDate getDoj() {
-		return doj;
-	}
-
-	public void setDoj(LocalDate doj) {
+		this.department = department;
 		this.doj = doj;
 	}
 
-	public double getSalary() {
+	public String getEmp_id() {
+		return emp_id;
+	}
+
+	public void setEmp_id(String emp_id) {
+		this.emp_id = emp_id;
+	}
+
+	public String getEmp_name() {
+		return emp_name;
+	}
+
+	public void setEmp_name(String emp_name) {
+		this.emp_name = emp_name;
+	}
+
+	public int getSalary() {
 		return salary;
 	}
 
-	public void setSalary(double salary) {
+	public void setSalary(int salary) {
 		this.salary = salary;
 	}
 
-	public Set<Skill> getSkills() {
-		return skills;
+	public String getDepartment() {
+		return department;
 	}
 
-	public void setSkills(Set<Skill> skills) {
-		this.skills = skills;
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public Date getDoj() {
+		return doj;
+	}
+
+	public void setDoj(Date doj) {
+		this.doj = doj;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [emp_id=" + emp_id + ", emp_name=" + emp_name + ", salary=" + salary + ", department="
+				+ department + ", doj=" + doj + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(emp_id);
 	}
 
 	@Override
@@ -77,12 +82,7 @@ public class Employee {
 		if (getClass() != obj.getClass())
 			return false;
 		Employee other = (Employee) obj;
-		return Objects.equals(id, other.id);
-	}
-
-	@Override
-	public String toString() {
-		return "EmployeeDao [id=" + id + ", name=" + name + ", doj=" + doj + ", salary=" + salary + "]";
+		return Objects.equals(emp_id, other.emp_id);
 	}
 
 }

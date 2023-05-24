@@ -1,83 +1,120 @@
-package com.avega.company.daoImpl;
+package com.avega.training.daoImpl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.logging.Logger;
 
-import com.avega.company.dao.EmployeeDao;
-import com.avega.company.exception.EmployeeNotFoundException;
-import com.avega.company.pojo.Employee;
-import com.avega.company.pojo.Skill;
+import com.avega.training.dao.EmployeeDao;
+import com.avega.training.dbutil.DBUtil;
+import com.avega.training.pojo.Employee;
 
 public class EmployeeDaoImpl implements EmployeeDao {
-
-	List<Employee> employees = new ArrayList<>();
+	
+	static Logger logger = Logger.getLogger(EmployeeDaoImpl.class.getName());
+	Connection connection = DBUtil.getConnection();
+	PreparedStatement ps = null;
 
 	@Override
 	public List<Employee> getAllEmployees() {
+		ResultSet rs = null;
+		String query = "SELECT * FROM employee";
+		List<Employee> employees = new ArrayList<>();
+		try {
+			ps = connection.prepareStatement(query);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				employees.add(
+						new Employee(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getDate(5)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return employees;
 	}
 
 	@Override
-	public List<Employee> getEmployeeByname(String name) {
-		List<Employee> employeeByname = new ArrayList<>();
-		employees.forEach(emp -> {
-			if (emp.getName().equalsIgnoreCase(name))
-				employeeByname.add(emp);
-		});
-		return employeeByname;
-	}
-
-	@Override
-	public Employee getEmployee(String id) throws EmployeeNotFoundException  {
-		Employee emp = null;
-		for (Employee employee : employees) {
-			if (employee.getId().equalsIgnoreCase(id))
-				emp = employee;
-		}
-		if(emp == null) {
-			 throw new EmployeeNotFoundException();
- 		}
-		return emp;
-	}
-
-	@Override
 	public boolean addEmployee(Employee employee) {
-		return employees.add(employee);
-	}
-
-	@Override
-	public boolean deleteEmployee(Employee employee) {
-		return employees.remove(employee);
-	}
-
-	@Override
-	public Employee updateEmployee(Employee employee) {
-		Employee update = null;
+		boolean isAdded = false;
+		String query = "INSERT INTO employee VALUES(?, ?, ?, ?, ?)";
 		try {
-			update = getEmployee(employee.getId());
-		} catch (EmployeeNotFoundException e) {
-			// TODO Auto-generated catch block
+			ps = connection.prepareStatement(query);
+			ps.setString(1, employee.getEmp_id());
+			ps.setString(2, employee.getEmp_name());
+			ps.setInt(3, employee.getSalary());
+			ps.setString(4, employee.getDepartment());
+			ps.setDate(5, employee.getDoj());
+			int count = ps.executeUpdate();
+			if (count > 0) {
+				logger.info("Employee added successfully!");
+				isAdded = true;
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		update.setName(employee.getName());
-		update.setDoj(employee.getDoj());
-		update.setSalary(employee.getSalary());
-		update.setSkills(employee.getSkills());
-		return update;
+		return isAdded;
 	}
 
 	@Override
-	public boolean assignSkillsToEmoloyee(Set<Skill> skills, String employeeId) {
-		boolean isSkillAdd = false;
-		for (Employee employee : employees) {
-			if (employee.getId().equalsIgnoreCase(employeeId)) {
-				employee.setSkills(skills);
-				if (employee.getSkills().equals(skills))
-					isSkillAdd = true;
+	public Employee getEmployeeById(String emp_id) {
+		ResultSet rs = null;
+		String query = "SELECT * FROM employee";
+		Employee employee = null;
+		try {
+			ps = connection.prepareStatement(query);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				if (rs.getString(1).equalsIgnoreCase(emp_id)) {
+					employee = new Employee(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4),
+							rs.getDate(5));
+				}
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return isSkillAdd;
+		return employee;
 	}
 
+	@Override
+	public boolean removeEmployee(String emp_id) {
+		boolean isDeleted = false;
+		String query = "DELETE FROM employee WHERE emp_id = ?";
+		try {
+			ps = connection.prepareStatement(query);
+			ps.setString(1, emp_id);
+			int count = ps.executeUpdate();
+			if (count > 0) {
+				logger.info("Employee deleted successfully!");
+				isDeleted = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return isDeleted;
+	}
+
+	@Override
+	public boolean updateEmployee(Employee employee) {
+		boolean isUpdate = false;
+		String query = "UPDATE employee SET emp_name = ?, salary = ?, department = ?, doj = ? WHERE emp_id = ?";
+		try {
+			ps = connection.prepareStatement(query);
+			ps.setString(1, employee.getEmp_name());
+			ps.setInt(2, employee.getSalary());
+			ps.setString(3, employee.getDepartment());
+			ps.setDate(4, employee.getDoj());
+			ps.setString(5, employee.getEmp_id());
+			int count = ps.executeUpdate();
+			if (count > 0) {
+				logger.info("Employee details successfully updated!");
+				isUpdate = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return isUpdate;
+	}
 }
